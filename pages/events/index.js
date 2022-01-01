@@ -3,8 +3,7 @@ import EventList from "../../components/events/EventList";
 import EventsSearch from "../../components/events/EventsSearch";
 import { useRouter } from "next/router";
 
-const EventsPage = () => {
-  const events = getAllEvents();
+const EventsPage = ({ events }) => {
   const router = useRouter();
 
   const findEventsHandler = (year, month) => {
@@ -17,6 +16,17 @@ const EventsPage = () => {
       <EventList events={events} />
     </div>
   );
+};
+
+export const getStaticProps = async () => {
+  const events = getAllEvents();
+
+  return {
+    props: {
+      events
+    },
+    revalidate: 60
+  };
 };
 
 export default EventsPage;
