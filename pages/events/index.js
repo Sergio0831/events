@@ -1,6 +1,6 @@
 import { getAllEvents } from "../../dummy-data";
-import EventList from "../../components/events/EventList";
-import EventsSearch from "../../components/events/EventsSearch";
+import Head from "next/head";
+import { EventList, EventsSearch } from "../../components/events";
 import { useRouter } from "next/router";
 
 const EventsPage = ({ events }) => {
@@ -12,6 +12,10 @@ const EventsPage = ({ events }) => {
 
   return (
     <div>
+      <Head>
+        <title>All Events</title>
+        <meta name='description' content='Find a lot of events' />
+      </Head>
       <EventsSearch onSearch={findEventsHandler} />
       <EventList events={events} />
     </div>

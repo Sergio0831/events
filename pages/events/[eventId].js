@@ -1,9 +1,13 @@
 import { getAllEvents, getEventById } from "../../helpers/api-util";
-import EventSummary from "../../components/event-detail/EventSummary";
-import EventLogistics from "../../components/event-detail/EventLogistics";
-import EventContent from "../../components/event-detail/EventContent";
-import ErrorAlert from "../../components/ui/ErrorAlert";
+import Head from "next/head";
+import {
+  EventSummary,
+  EventLogistics,
+  EventContent
+} from "../../components/event-detail";
+import { ErrorAlert } from "../../components/ui";
 import { getFeaturedEvents } from "../../dummy-data";
+import { Comments } from "../../components/input";
 
 const EventDetailPage = ({ event }) => {
   if (!event) {
@@ -16,11 +20,16 @@ const EventDetailPage = ({ event }) => {
 
   return (
     <>
+      <Head>
+        <title>{event.title}</title>
+        <meta name='description' content={event.description} />
+      </Head>
       <EventSummary title={event.title} />
       <EventLogistics event={event} />
       <EventContent>
         <p>{event.description}</p>
       </EventContent>
+      <Comments eventId={event.id} />
     </>
   );
 };

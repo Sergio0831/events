@@ -1,11 +1,10 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import ErrorAlert from "../../components/ui/ErrorAlert";
-import Button from "../../components/ui/Button";
-import ResultsTitle from "../../components/events/ResultsTitle";
-import EventList from "../../components/events/EventList";
+import Head from "next/head";
+import { EventList, ResultsTitle } from "../../components/events";
+import { ErrorAlert, Button } from "../../components/ui";
 
-const FilteredEventsPage = () => {
+function FilteredEventsPage() {
   const [loadedEvents, setLoadedEvents] = useState();
   const router = useRouter();
 
@@ -44,6 +43,15 @@ const FilteredEventsPage = () => {
   const numYear = +filteredYear;
   const numMonth = +filteredMonth;
 
+  const PageHeadData = () => {
+    return (
+      <Head>
+        <title>Filtered Events</title>
+        <meta name='description' content='A list of filtered events' />
+      </Head>
+    );
+  };
+
   if (
     isNaN(numYear) ||
     isNaN(numMonth) ||
@@ -53,14 +61,15 @@ const FilteredEventsPage = () => {
     numMonth > 12
   ) {
     return (
-      <Fragment>
+      <>
+        <PageHeadData />
         <ErrorAlert>
           <p>Invalid filter. Please adjust your values!</p>
         </ErrorAlert>
         <div className='center'>
           <Button link='/events'>Show All Events</Button>
         </div>
-      </Fragment>
+      </>
     );
   }
 
@@ -74,26 +83,28 @@ const FilteredEventsPage = () => {
 
   if (!filteredEvents || filteredEvents.length === 0) {
     return (
-      <Fragment>
+      <>
+        <PageHeadData />
         <ErrorAlert>
           <p>No events found for the chosen filter!</p>
         </ErrorAlert>
         <div className='center'>
           <Button link='/events'>Show All Events</Button>
         </div>
-      </Fragment>
+      </>
     );
   }
 
   const date = new Date(numYear, numMonth - 1);
 
   return (
-    <Fragment>
+    <>
+      <PageHeadData />
       <ResultsTitle date={date} />
       <EventList events={filteredEvents} />
-    </Fragment>
+    </>
   );
-};
+}
 
 // export async function getServerSideProps(context) {
 //   const { params } = context;
