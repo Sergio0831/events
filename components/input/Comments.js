@@ -2,16 +2,23 @@ import { useEffect, useState } from "react";
 import CommentList from "./CommentList";
 import NewComment from "./NewComment";
 import classes from "./Comments.module.scss";
+import { useNotificationContext } from "../../store/NotificationContext";
 
 const Comments = ({ eventId }) => {
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const { showNotification } = useNotificationContext();
 
   useEffect(() => {
     if (showComments) {
+      setIsLoading(true);
       fetch("/api/comments/" + eventId)
         .then((response) => response.json())
-        .then((data) => setComments(data.comments));
+        .then((data) => {
+          setComments(data.comments);
+          setIsLoading(false);
+        });
     }
   }, [showComments]);
 
@@ -20,6 +27,12 @@ const Comments = ({ eventId }) => {
   };
 
   const addCommentHandler = (commentData) => {
+    showNotification({
+      title: "Sending comment...",
+      message: "Comment will store in database",
+      status: "pending"
+    });
+
     // send data to API
     fetch("/api/comments/" + eventId, {
       method: "POST",
@@ -28,8 +41,28 @@ const Comments = ({ eventId }) => {
         "Content-Type": "application/json"
       }
     })
-      .then((response) => response.json())
-      .then((data) => console.log(data));
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        response.json().then((data) => {
+          throw new Error(data.message || "Something went wrong");
+        });
+      })
+      .then((data) =>
+        showNotification({
+          title: "Success",
+          message: "Successfully added a comment",
+          status: "success"
+        })
+      )
+      .catch((error) =>
+        showNotification({
+          title: "Error",
+          message: error.message || "Something went wrong!",
+          status: "error"
+        })
+      );
   };
 
   return (
@@ -38,7 +71,8 @@ const Comments = ({ eventId }) => {
         {showComments ? "Hide" : "Show"} Comments
       </button>
       {showComments && <NewComment onAddComment={addCommentHandler} />}
-      {showComments && <CommentList comments={comments} />}
+      {showComments && isLoading && <h2>Loading...</h2>}
+      {showComments && !isLoading && <CommentList comments={comments} />}
     </section>
   );
 };
