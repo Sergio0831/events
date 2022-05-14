@@ -1,23 +1,21 @@
-import { MongoClient } from "mongodb";
+import { MongoClient } from 'mongodb';
 
 const handler = async (req, res) => {
-  if (req.method === "POST") {
+  if (req.method === 'POST') {
     const userEmail = req.body.email;
 
-    if (!userEmail || !userEmail.includes("@")) {
-      res.status(422).json({ message: "Invalid email address..." });
+    if (!userEmail || !userEmail.includes('@')) {
+      res.status(422).json({ message: 'Invalid email address...' });
       return;
     }
 
-    const client = await MongoClient.connect(
-      "mongodb+srv://sergejs:sergio0831@nodeexpressprojects.1vapw.mongodb.net/events?retryWrites=true&w=majority"
-    );
+    const client = await MongoClient.connect(process.env.MONGO_DB);
     const db = client.db();
-    await db.collection("emails").insertOne({ email: userEmail });
+    await db.collection('emails').insertOne({ email: userEmail });
 
     client.close();
 
-    res.status(201).json({ message: "Signed up" });
+    res.status(201).json({ message: 'Signed up' });
   }
 };
 
